@@ -1,0 +1,50 @@
+name: CD – BearingPoint .NET 8
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build-test-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restore
+        run: |
+          dotnet restore ./bearingpoint-ci-cd-demo.Api/bearingpoint-ci-cd-demo.csproj
+          dotnet restore ./bearingpoint-ci-cd-demo.Tests/bearingpoint-ci-cd-demo.Tests.csproj
+
+      - name: Build
+        run: |
+          dotnet build ./bearingpoint-ci-cd-demo.Api/bearingpoint-ci-cd-demo.csproj --configuration Release --no-restore
+          dotnet build ./bearingpoint-ci-cd-demo.Tests/bearingpoint-ci-cd-demo.Tests.csproj --configuration Release --no-restore
+
+      - name: Test
+        run: dotnet test ./bearingpoint-ci-cd-demo.Tests/bearingpoint-ci-cd-demo.Tests.csproj --configuration Release --verbosity normal
+
+      - name: Publish API
+        run: dotnet publish ./bearingpoint-ci-cd-demo.Api/bearingpoint-ci-cd-demo.csproj -c Release -o ./publish
+
+      # Login bei Azure mit dem Service Principal
+      - name: Azure login
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      # Deployment der veröffentlichten Dateien auf deine Web App
+      - name: Deploy to Azure Web App
+        run: |
+          az webapp deploy \
+            --resource-group rg-bearingpoint-demo \
+            --name bearingpoint-ci-cd-demo \
+            --src-path ./publish \
+            --type zip
