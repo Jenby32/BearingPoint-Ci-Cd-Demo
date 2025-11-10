@@ -34,17 +34,20 @@ jobs:
       - name: Publish API
         run: dotnet publish ./bearingpoint-ci-cd-demo.Api/bearingpoint-ci-cd-demo.csproj -c Release -o ./publish
 
-      # Login bei Azure mit dem Service Principal
+      - name: Create deployment zip
+        run: |
+          cd publish
+          zip -r ../publish.zip .
+
       - name: Azure login
         uses: azure/login@v2
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      # Deployment der veröffentlichten Dateien auf deine Web App
       - name: Deploy to Azure Web App
         run: |
           az webapp deploy \
             --resource-group rg-bearingpoint-demo \
             --name bearingpoint-ci-cd-demo \
-            --src-path ./publish \
+            --src-path publish.zip \
             --type zip
