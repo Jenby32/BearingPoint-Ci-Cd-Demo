@@ -34,7 +34,7 @@ public class ApiEndToEndTests : IAsyncLifetime
             {
                 FileName = "dotnet",
                 // Entweder explizit URL setzen:
-                Arguments = $"run --no-build --urls {BaseUrl}",
+                Arguments = $"run --urls {BaseUrl}",
                 // oder Launch-Profile nutzen:
                 // Arguments = "run --no-build --launch-profile bearingpoint_ci_cd_demo",
                 WorkingDirectory = projectDir,
