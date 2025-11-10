@@ -27,4 +27,4 @@ jobs:
         run: dotnet build ./bearingpoint-ci-cd-demo.Api/bearingpoint-ci-cd-demo.csproj --configuration Release --no-restore
 
       - name: Test
-        run: dotnet test ./bearingpoint-ci-cd-demo.Tests/bearingpoint-ci-cd-demo.Tests.csproj --no-build --verbosity normal
+        run: dotnet test ./bearingpoint-ci-cd-demo.Tests/bearingpoint-ci-cd-demo.Tests.csproj --verbosity normal
