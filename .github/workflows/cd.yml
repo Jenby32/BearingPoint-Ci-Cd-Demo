@@ -51,3 +51,4 @@ jobs:
             --name bearingpoint-ci-cd-demo \
             --src-path publish.zip \
             --type zip
+            --track-status false
