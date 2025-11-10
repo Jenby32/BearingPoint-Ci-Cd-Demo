@@ -1,0 +1,30 @@
+name: CI – BearingPoint .NET 6
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 6
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 6.0.x
+
+      - name: Restore
+        run: |
+          dotnet restore ./bearingpoint-ci-cd-demo.Api/bearingpoint-ci-cd-demo.Api.csproj
+          dotnet restore ./bearingpoint-ci-cd-demo.Tests/bearingpoint-ci-cd-demo.Tests.csproj
+
+      - name: Build
+        run: dotnet build ./bearingpoint-ci-cd-demo.Api/bearingpoint-ci-cd-demo.Api.csproj --configuration Release --no-restore
+
+      - name: Test
+        run: dotnet test ./bearingpoint-ci-cd-demo.Tests/bearingpoint-ci-cd-demo.Tests.csproj --no-build --verbosity normal
