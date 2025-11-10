@@ -50,5 +50,6 @@ jobs:
             --resource-group rg-bearingpoint-demo \
             --name bearingpoint-ci-cd-demo \
             --src-path publish.zip \
-            --type zip
-            --track-status false
+            --type zip \
+            --track-status false \
+            --async true
