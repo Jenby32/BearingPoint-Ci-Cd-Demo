@@ -1,4 +1,4 @@
-name: CI – BearingPoint .NET 6
+name: CI â€“ BearingPoint .NET 6
 
 on:
   push:
@@ -20,11 +20,11 @@ jobs:
 
       - name: Restore
         run: |
-          dotnet restore ./bearingpoint-ci-cd-demo.Api/bearingpoint-ci-cd-demo.Api.csproj
+          dotnet restore ./bearingpoint-ci-cd-demo.Api/bearingpoint-ci-cd-demo.csproj
           dotnet restore ./bearingpoint-ci-cd-demo.Tests/bearingpoint-ci-cd-demo.Tests.csproj
 
       - name: Build
-        run: dotnet build ./bearingpoint-ci-cd-demo.Api/bearingpoint-ci-cd-demo.Api.csproj --configuration Release --no-restore
+        run: dotnet build ./bearingpoint-ci-cd-demo.Api/bearingpoint-ci-cd-demo.csproj --configuration Release --no-restore
 
       - name: Test
         run: dotnet test ./bearingpoint-ci-cd-demo.Tests/bearingpoint-ci-cd-demo.Tests.csproj --no-build --verbosity normal
