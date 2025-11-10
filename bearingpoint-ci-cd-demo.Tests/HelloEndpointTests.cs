@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -11,21 +11,33 @@ public class ApiEndToEndTests : IAsyncLifetime
 {
     private Process? _process;
     private readonly HttpClient _client = new();
-    private const int Port = 5005;
     private const string BaseUrl = "http://localhost:5014";
 
     public async Task InitializeAsync()
     {
-        // Pfad zu deinem API-Projekt
-        var projectPath = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, ".." ,"..", "..", "..", "bearingpoint-ci-cd-demo.Api", "bearingpoint-ci-cd-demo.csproj"));
+        // Pfad zum API-Projektordner
+        var projectDir = Path.GetFullPath(
+            Path.Combine(
+                AppContext.BaseDirectory,
+                "..", "..", "..", "..",
+                "bearingpoint-ci-cd-demo.Api"));
+
+        if (!Directory.Exists(projectDir))
+        {
+            throw new DirectoryNotFoundException(
+                $"API-Projektordner nicht gefunden: {projectDir}");
+        }
 
         _process = new Process
         {
             StartInfo = new ProcessStartInfo
             {
                 FileName = "dotnet",
-                // WICHTIG: --no-build, damit er NICHT nochmal kompiliert → kein Lock
-                Arguments = $"run --no-build --urls {BaseUrl} --project \"{projectPath}\"",
+                // Entweder explizit URL setzen:
+                Arguments = $"run --no-build --urls {BaseUrl}",
+                // oder Launch-Profile nutzen:
+                // Arguments = "run --no-build --launch-profile bearingpoint_ci_cd_demo",
+                WorkingDirectory = projectDir,
                 UseShellExecute = false,
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
@@ -35,18 +47,27 @@ public class ApiEndToEndTests : IAsyncLifetime
 
         _process.Start();
 
-        // Optional: Output einsammeln, falls was schiefgeht
         var stdoutTask = _process.StandardOutput.ReadToEndAsync();
         var stderrTask = _process.StandardError.ReadToEndAsync();
 
-        // Warten, bis /health erreichbar ist (max. 15s)
+        // Bis zu 15 Sekunden warten, bis /health erreichbar ist
         for (var i = 0; i < 15; i++)
         {
+            if (_process.HasExited)
+            {
+                var stdoutEarly = await stdoutTask;
+                var stderrEarly = await stderrTask;
+
+                throw new Exception(
+                    $"API-Prozess ist vorzeitig beendet (ExitCode: {_process.ExitCode}).\n\n" +
+                    $"STDOUT:\n{stdoutEarly}\n\nSTDERR:\n{stderrEarly}");
+            }
+
             try
             {
                 var resp = await _client.GetAsync($"{BaseUrl}/health");
                 if (resp.IsSuccessStatusCode)
-                    return; // API läuft
+                    return;
             }
             catch
             {
