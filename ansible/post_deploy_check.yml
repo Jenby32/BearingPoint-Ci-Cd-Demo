@@ -1,0 +1,27 @@
+- name: Post Deploy Checks for bearingpoint-ci-cd-demo
+  hosts: local
+  gather_facts: false
+
+  vars:
+    app_base_url: "https://bearingpoint-ci-cd-demo.azurewebsites.net"
+
+  tasks:
+    - name: Check root endpoint returns 200
+      uri:
+        url: "{{ app_base_url }}/"
+        status_code: 200
+      register: root_result
+
+    - name: Debug root endpoint response
+      debug:
+        msg: "Root responded with status {{ root_result.status }}"
+
+    - name: Check /health endpoint returns 200
+      uri:
+        url: "{{ app_base_url }}/health"
+        status_code: 200
+      register: health_result
+
+    - name: Debug health endpoint response
+      debug:
+        msg: "Health responded with status {{ health_result.status }}"
