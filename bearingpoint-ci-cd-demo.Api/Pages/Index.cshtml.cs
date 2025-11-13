@@ -54,7 +54,7 @@ namespace bearingpoint_ci_cd_demo.Pages
 
                 new("Wie kann man mich erreichen?",
                     "E-Mail: kevinkozar2005@gmail.com · Tel.: +43 676 4277312 · "
-                    + "LinkedIn: linkedin.com/in/kevin-kozar")
+                    + "LinkedIn: https://www.linkedin.com/in/kevin-kozar-5a677630b/")
             };
         }
     }
