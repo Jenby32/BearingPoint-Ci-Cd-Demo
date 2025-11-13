@@ -1,9 +1,50 @@
 ﻿@page
 @model IndexModel
-@{
-    ViewData["Title"] = "Home page";
-}
+
 
 <div class="text-center">
-    <h1 class="display-4">Hello BearingPoint</h1>
+    <h1 class="display-4">Hello BearingPoint 👋</h1>
+    <p class="lead">Willkommen auf meiner Bewerbungs-Demo mit .NET, CI/CD & Azure.</p>
 </div>
+
+<hr />
+
+<section class="container" style="max-width:800px;margin:auto;text-align:left;">
+    <h2>FAQ über mich</h2>
+
+    <div class="accordion" id="faq">
+        @for (int i = 0; i < Model.Faqs.Count; i++)
+        {
+            var item = Model.Faqs[i];
+            var panelId = $"faq-panel-{i}";
+            var btnId = $"faq-btn-{i}";
+            <div class="accordion-item" style="margin-bottom:10px;">
+                <button class="accordion-button"
+                    id="@btnId"
+                    aria-expanded="false"
+                    aria-controls="@panelId"
+                    data-target="#@panelId"
+                    style="width:100%;text-align:left;padding:10px 12px;border:none;border-radius:6px;background-color:#f3f4f6;font-weight:600;cursor:pointer;">
+                    @item.Question
+                </button>
+                <div class="accordion-panel" id="@panelId" role="region" aria-labelledby="@btnId" hidden
+                 style="padding:10px 12px;background-color:#ffffff;border-radius:6px;border:1px solid #e5e7eb;">
+                    <p>@item.Answer</p>
+                </div>
+            </div>
+        }
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        document.querySelectorAll('.accordion-button').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const target = document.querySelector(btn.getAttribute('data-target'));
+            const expanded = btn.getAttribute('aria-expanded') === 'true';
+            btn.setAttribute('aria-expanded', String(!expanded));
+            target.hidden = expanded;
+          });
+        });
+    </script>
+}
